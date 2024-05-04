@@ -5,7 +5,6 @@ attrs==23.2.0
 backports.zoneinfo==0.2.1
 blinker==1.6.3
 cachetools==5.3.3
-certifi @ file:///home/conda/feedstock_root/build_artifacts/certifi_1707022139797/work/certifi
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
@@ -71,7 +70,6 @@ toml==0.10.2
 toolz==0.12.1
 tornado==6.2
 tqdm==4.66.4
-typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1688315532570/work
 tzdata==2024.1
 tzlocal==4.3.1
 urllib3==2.0.7
