@@ -5,7 +5,6 @@ from PIL import Image
 # import pickle
 import pickle
 import numpy as np
-import tensorflow
 import cv2
 # from tensorflow.keras.preprocessing import image
 from tensorflow.keras.preprocessing import image
