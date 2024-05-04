@@ -1,6 +1,6 @@
-numpy==1.18.5
-opencv_python==4.9.0.80
+numpy>=1.19.3
 Pillow==9.5.0
+opencv-python==4.9.0.80
 scikit_learn==1.0.2
 streamlit==1.23.1
 tensorflow==2.3.1
