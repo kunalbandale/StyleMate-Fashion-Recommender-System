@@ -27,29 +27,6 @@ Check out the live demo of StyleMate: [StyleMate Demo](https://yourdemo.link)
 6. Deployment
 7. Continuous Improvement
 
-## Installation
-
-To run StyleMate locally, follow these steps:
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/kunalbandale/stylemate-fashion-recommender-system.git
-   ```
-
-2. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Run the Streamlit app:
-   ```bash
-   streamlit run main.py
-   ```
-
-## Contributing
-
-Contributions are welcome! Please feel free to open an issue or submit a pull request for any enhancements or bug fixes.
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
