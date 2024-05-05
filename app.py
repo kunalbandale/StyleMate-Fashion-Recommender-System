@@ -1,58 +1,62 @@
-# Import necessary libraries
-import tensorflow as tf
-import numpy as np
-from numpy.linalg import norm
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.layers import GlobalMaxPooling2D
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from flask import Flask, render_template, request
 import os
-from tqdm import tqdm
+import tensorflow as tf
+from PIL import Image
 import pickle
+import numpy as np
+import cv2
+from tensorflow.keras.preprocessing import image
+from numpy.linalg import norm
+from sklearn.neighbors import NearestNeighbors
+from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from tensorflow.keras.layers import GlobalMaxPooling2D
 
-# Load pre-trained ResNet50 model
-# Set `include_top` to False to exclude the fully-connected layers at the top
-# Set `input_shape` to (224, 224, 3) to match the expected input size of ResNet50
+app = Flask(__name__)
+
+feature_list = np.array(pickle.load(open('embeddings.pkl', 'rb')))
+filenames = pickle.load(open('filenames.pkl', 'rb'))
+
 model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-
-# Freeze the weights of the pre-trained ResNet50 model
 model.trainable = False
-
-# Create a Sequential model
 model = tf.keras.Sequential([
-    model,  # Add the pre-trained ResNet50 model as a layer
-    GlobalMaxPooling2D()  # Add GlobalMaxPooling2D layer to obtain image embeddings
+    model,
+    GlobalMaxPooling2D()
 ])
 
+def save_uploaded_file(uploaded_file):
+    try:
+        with open(os.path.join('uploads', uploaded_file.filename), "wb") as f:
+            f.write(uploaded_file.read())
+        return 1
+    except:
+        return 0
 
-# print(model.summary())
-
-def extract_features(img_path, model):
+def feature_extraction(img_path, model):
     img = image.load_img(img_path, target_size=(224, 224))
     img_array = image.img_to_array(img)
     expanded_img_array = np.expand_dims(img_array, axis=0)
     preprocessed_img = preprocess_input(expanded_img_array)
     result = model.predict(preprocessed_img).flatten()
     normalized_result = result / norm(result)
-
     return normalized_result
 
-filenames = []
+def recommend(features, feature_list):
+    neighbors = NearestNeighbors(n_neighbors=6, algorithm='brute', metric='euclidean')
+    neighbors.fit(feature_list)
+    distances, indices = neighbors.kneighbors([features])
+    return indices
 
-for file in os.listdir('images'):
-    filenames.append(os.path.join('images',file))
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and save_uploaded_file(file):
+            features = feature_extraction(os.path.join("uploads", file.filename), model)
+            indices = recommend(features, feature_list)
+            return render_template('result.html', images=[filenames[i] for i in indices[0]])
+        else:
+            return "Error occurred"
+    return render_template('index.html')
 
-# print(len(filenames))
-# print(filenames[0:5])
-
-# feature_list = [[],[],[],[]]
-feature_list = []
-
-for file in tqdm(filenames):
-    feature_list.append(extract_features(file,model))
-
-print(np.array(feature_list).shape)
-
-pickle.dump(feature_list,open('embeddings.pkl','wb'))
-pickle.dump(filenames,open('filenames.pkl','wb'))
-
-# feature extraction completed
+if __name__ == '__main__':
+    app.run(debug=True)
